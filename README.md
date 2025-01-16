@@ -8,7 +8,7 @@
 
 ## Overview
 
-This repository contains the official implementation of the paper **"Weight for Robustness: A Comprehensive Approach towards Optimal Fault-Tolerant Asynchronous ML"**, accepted at **NeurIPS 2024**. The repository provides a modular framework for training machine learning models in asynchronous distributed settings while ensuring robustness against Byzantine faults using advanced aggregation techniques and attack-resistant strategies.
+This repository contains the official implementation of the paper **"Weight for Robustness: A Comprehensive Approach towards Optimal Fault-Tolerant Asynchronous ML"**, authored by Tehila Dahan and Kfir Y. Levy, and accepted at NeurIPS 2024. The repository provides a modular framework for training machine learning models in asynchronous distributed settings while ensuring robustness against Byzantine faults using advanced aggregation techniques and attack-resistant strategies.
 
 ---
 
