@@ -2,7 +2,7 @@
 
 # Weight for Robustness: A Comprehensive Approach towards Optimal Fault-Tolerant Asynchronous ML
 
-[![NeurIPS 2024](https://img.shields.io/badge/NeurIPS-2024-blue.svg)](#) [![arXiv](https://img.shields.io/badge/arXiv-2304.04169-B31B1B.svg)](#) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![NeurIPS 2024](https://img.shields.io/badge/NeurIPS-2024-blue.svg)](#) [![arXiv](https://img.shields.io/badge/arXiv-2304.04169-B31B1B.svg)](https://arxiv.org/abs/2501.09621) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ---
 
