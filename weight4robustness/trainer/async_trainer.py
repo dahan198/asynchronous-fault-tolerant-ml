@@ -123,15 +123,13 @@ class AsyncTrainer(Trainer):
             if i == self.workers_num:
                 break
             self.weights[i] += 1
+            self.workers[i].current_sample = (inputs, targets)
+            self.workers[i].next_sample = (inputs, targets)
             inputs, targets = inputs.to(self.device), targets.to(self.device)
 
             if i < self.honest_num:  # Honest worker
-                if self.workers[i].two_passes:  # STORM workers
-                    gradient, _, _ = self.get_worker_gradient(inputs, targets)
-                    self.workers[i].compute_estimator(gradient)
-                else:  # Momentum workers
-                    gradient, _, _ = self.get_worker_gradient(inputs, targets)
-                    self.workers[i].step(gradient)
+                gradient, _, _ = self.get_worker_gradient(inputs, targets)
+                self.workers[i].step(gradient)
                 self.current_workers_momentums[i] = self.workers[i].momentum.clone()
                 self.next_workers_momentums[i] = self.workers[i].momentum.clone()
             else:  # Byzantine worker
@@ -156,19 +154,25 @@ class AsyncTrainer(Trainer):
         """
         worker_id = self.get_next_worker()
         self.weights[worker_id] += 1
-        inputs, targets = inputs.to(self.device), targets.to(self.device)
+        self.workers[worker_id].current_sample = self.workers[worker_id].next_sample
+        self.workers[worker_id].next_sample = (inputs, targets)
+        inputs, targets = (self.workers[worker_id].current_sample[0].to(self.device),
+                           self.workers[worker_id].current_sample[1].to(self.device))
 
         if self.workers[worker_id].two_passes:  # STORM workers
             loss, outputs, _ = self.workers_optimization_step(inputs, targets, worker_id)
             self.optimizer.step()
 
+            inputs, targets = (self.workers[worker_id].next_sample[0].to(self.device),
+                               self.workers[worker_id].next_sample[1].to(self.device))
+
             if worker_id >= self.honest_num and self.attack.__class__.__name__ == "LabelFlippingAttack":
                 gradient, _, _ = self.get_worker_gradient(inputs, 9 - targets)
-                self.workers[worker_id].compute_estimator(gradient)
+                self.workers[worker_id].update_gtilde(gradient)
             elif not (self.attack.__class__.__name__ in ["ALittleIsEnoughAttack", "IPMAttack"] and
                       worker_id >= self.honest_num):
                 gradient, _, _ = self.get_worker_gradient(inputs, targets)
-                self.workers[worker_id].compute_estimator(gradient)
+                self.workers[worker_id].update_gtilde(gradient)
         else:  # Momentum workers
             loss, outputs, _ = self.workers_optimization_step(inputs, targets, worker_id)
             self.optimizer.step()

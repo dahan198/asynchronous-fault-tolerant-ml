@@ -18,6 +18,8 @@ class Worker:
         self.beta = beta
         self.momentum = None
         self.two_passes = False  # Indicates whether two passes are needed for the worker
+        self.current_sample = None
+        self.next_sample = None
 
     def step(self, gradients):
         """
@@ -112,7 +114,7 @@ class WorkerSTORM(Worker):
 
     def step(self, gradients):
         """
-        Updates the running estimator with the current gradients.
+        Computes the STORM estimator by applying fixed momentum coefficient.
 
         Args:
             gradients (torch.Tensor): Gradients from the current step.
@@ -120,22 +122,22 @@ class WorkerSTORM(Worker):
         Returns:
             torch.Tensor: The current momentum (not updated in this step).
         """
-        self.g_tilde = gradients.clone()
         if self.momentum is None:
             self.momentum = gradients.clone()
-        return self.momentum
-
-    def compute_estimator(self, gradients):
-        """
-        Computes the STORM estimator by applying fixed momentum coefficient.
-
-        Args:
-            gradients (torch.Tensor): Gradients from the current step.
-        """
-        if self.momentum is None:
-            self.momentum = gradients.clone()
+            self.g_tilde = gradients.clone()
         else:
             difference = self.momentum.sub(self.g_tilde)  # difference = self.momentum - self.g_tilde
             difference.mul_(1 - self.beta)  # Scale difference by (1 - beta) in-place
             self.momentum.copy_(gradients)  # Copy gradients to momentum
             self.momentum.add_(difference)  # Add scaled difference to momentum
+
+        return self.momentum
+
+    def update_gtilde(self, gradients):
+        """
+        Updates g_tilde.
+
+        Args:
+            gradients (torch.Tensor): Gradients from the current step.
+        """
+        self.g_tilde = gradients.clone()
