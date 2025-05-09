@@ -41,12 +41,10 @@ pip install -r requirements.txt
 
 ### **Running an Experiment**
 
-To train a model using one of the provided robust aggregation methods, run the following command:
+To train an experiment, run the following command:
 
 ```bash
-python main.py --config_folder_path ./config --dataset cifar10 --model conv_cifar10 --optimizer mu2sgd \
-               --agg weighted_rfa --workers_num 17 --byzantine_num 8 --attack lf \
-               --learning_rate 0.01 --batch_size 16 --use_wandb
+python run.py
 ```
 
 ---
